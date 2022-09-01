@@ -1,4 +1,0 @@
-#ifndef HELANG_META_HPP
-#define HELANG_META_HPP
-
-#endif  // !HELANG_META_HPP
