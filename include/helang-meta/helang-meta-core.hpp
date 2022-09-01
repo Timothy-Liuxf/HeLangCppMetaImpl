@@ -59,9 +59,9 @@ struct u8 : detail::u8_impl<vals...> {
       int nums[] = {vals...};
       std::string res;
       for (auto itr = std::begin(nums); itr != std::end(nums) - 1; ++itr) {
-        res += std::to_string(*itr) + " | ";
+        res += std::to_string(*itr) + "_ | ";
       }
-      res += std::to_string(*(std::end(nums) - 1));
+      res += std::to_string(*(std::end(nums) - 1)) + '_';
       return res;
     }
   }
@@ -73,9 +73,9 @@ struct u8 : detail::u8_impl<vals...> {
       int nums[] = {vals...};
       std::wstring res;
       for (auto itr = std::begin(nums); itr != std::end(nums) - 1; ++itr) {
-        res += std::to_wstring(*itr) + L" | ";
+        res += std::to_wstring(*itr) + L"_ | ";
       }
-      res += std::to_wstring(*(std::end(nums) - 1));
+      res += std::to_wstring(*(std::end(nums) - 1)) + L'_';
       return res;
     }
   }
@@ -197,10 +197,12 @@ struct u8_at_idx;
 
 template <int first_val, int... vals, int idx>
 struct u8_at_idx<u8_impl<first_val, vals...>, idx>
-    : u8_at_idx<u8_impl<vals...>, idx - 1> {};
+    : u8_at_idx<u8_impl<vals...>, idx - 1> {
+  static_assert(idx > 1, "Indexes in multi_indexer must be at least 1!");
+};
 
 template <int first_val, int... vals>
-struct u8_at_idx<u8_impl<first_val, vals...>, 0>
+struct u8_at_idx<u8_impl<first_val, vals...>, 1>
     : std::integral_constant<int, first_val> {};
 
 template <int... idxs, int... vals>
