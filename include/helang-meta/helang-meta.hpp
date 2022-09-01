@@ -1,3 +1,9 @@
+// This file is part of the project HelangCppMetaImpl.
+//
+// Copyright (C) 2022 Timothy Liu
+//
+// MIT License
+
 #ifndef HELANG_META_HPP_
 #define HELANG_META_HPP_
 
@@ -72,6 +78,24 @@ struct u8 : detail::u8_impl<vals...> {
       res += std::to_wstring(*(std::end(nums) - 1));
       return res;
     }
+  }
+
+  template <typename CharT>
+  [[nodiscard]] std::basic_string<CharT> to_str_basic_string() const {
+    if constexpr (sizeof...(vals) == 0) {
+      return {};
+    } else {
+      return {
+          static_cast<typename std::basic_string<CharT>::value_type>(vals)...};
+    }
+  }
+
+  [[nodiscard]] std::string to_str_string() const {
+    return to_str_basic_string<std::string::value_type>();
+  }
+
+  [[nodiscard]] std::wstring to_str_wstring() const {
+    return to_str_basic_string<std::wstring::value_type>();
   }
 };
 
