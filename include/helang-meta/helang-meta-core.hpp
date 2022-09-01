@@ -80,6 +80,7 @@ struct u8 : detail::u8_impl<vals...> {
     }
   }
 
+ private:
   template <typename CharT>
   [[nodiscard]] std::basic_string<CharT> to_str_basic_string() const {
     if constexpr (sizeof...(vals) == 0) {
@@ -90,6 +91,7 @@ struct u8 : detail::u8_impl<vals...> {
     }
   }
 
+ public:
   [[nodiscard]] std::string to_str_string() const {
     return to_str_basic_string<std::string::value_type>();
   }
@@ -212,9 +214,14 @@ struct u8_indexer<u8_impl<idxs...>, u8_impl<vals...>> {
     return u8<u8_at_idx<u8_impl<vals...>, idxs>::value...>{};
   }
 
+  std::string to_string() const { return to_u8().to_string(); }
+  std::string to_wstring() const { return to_u8().to_wstring(); }
+
+  std::string to_str_string() const { return to_u8().to_str_string(); }
+  std::wstring to_str_wstring() const { return to_u8().to_str_wstring(); }
+
  private:
   constexpr u8_indexer() noexcept = default;
-  constexpr u8_indexer(const u8_indexer&) noexcept = default;
 };
 
 template <int... vals>
