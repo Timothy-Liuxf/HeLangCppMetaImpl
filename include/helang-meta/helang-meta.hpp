@@ -181,7 +181,9 @@ template <int... idxs, int... vals>
 struct u8_indexer<u8_impl<idxs...>, u8_impl<vals...>> {
   friend struct u8_impl<vals...>;
 
-  HELANG_META_CONSTEVAL operator auto() const noexcept { return to_u8(); }
+  HELANG_META_CONSTEVAL explicit operator auto() const noexcept {
+    return to_u8();
+  }
   HELANG_META_CONSTEVAL auto to_u8() const noexcept {
     return u8<u8_at_idx<u8_impl<vals...>, idxs>::value...>{};
   }
