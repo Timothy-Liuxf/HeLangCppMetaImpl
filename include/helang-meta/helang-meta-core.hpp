@@ -21,6 +21,11 @@ namespace detail {
 template <typename indexer, typename u8vec>
 struct u8_indexer;
 
+template <int size>
+struct array_wrapper {
+  int array[size];
+};
+
 template <int... vals>
 struct u8_impl {
   constexpr u8_impl() noexcept = default;
@@ -32,6 +37,10 @@ struct u8_impl {
   template <int... val>
   [[nodiscard]] HELANG_META_CONSTEVAL auto operator[](
       u8_impl<val...>) const noexcept;
+
+  HELANG_META_CONSTEVAL auto to_array() const noexcept {
+    return array_wrapper<sizeof...(vals)>{{vals...}};
+  }
 };
 
 }  // namespace detail
@@ -152,6 +161,16 @@ template <int... vals, int val>
 struct append_u8<u8_impl<vals...>, val>
     : std::enable_if<true, u8_impl<vals..., val>> {};
 
+// Construct a pure u8 vector at a specific size with all elements having the
+// same value
+
+template <int val, int size>
+struct pure_u8_vec : append_u8<typename pure_u8_vec<val, size - 1>::type, val> {
+};
+
+template <int val>
+struct pure_u8_vec<val, 0> : std::enable_if<true, u8_impl<>> {};
+
 // Add a number onto a u8
 
 template <typename, typename, int>
@@ -216,10 +235,55 @@ template <int... vals>
 struct indexer_to_u8<u8_impl<0>, u8_impl<vals...>>
     : std::enable_if<true, u8<vals...>> {};
 
+template <typename scanned, typename left, int idx, int replace_val>
+struct u8_replace_single_impl;
+
+template <int... scanned, int first_left, int... left, int idx, int replace_val>
+struct u8_replace_single_impl<u8_impl<scanned...>, u8_impl<first_left, left...>,
+                              idx, replace_val>
+    : u8_replace_single_impl<u8_impl<scanned..., first_left>, u8_impl<left...>,
+                             idx - 1, replace_val> {};
+
+template <int... scanned, int first_left, int... left, int replace_val>
+struct u8_replace_single_impl<u8_impl<scanned...>, u8_impl<first_left, left...>,
+                              1, replace_val>
+    : std::enable_if<true, u8_impl<scanned..., replace_val, left...>> {};
+
+template <typename u8vec, int idx, int replace_val>
+struct u8_replace_single
+    : u8_replace_single_impl<u8_impl<>, u8vec, idx, replace_val> {};
+
+template <typename u8vec, typename u8idx, int replace_val>
+struct u8_replace_impl;
+
+template <typename u8vec, int replace_val>
+struct u8_replace_impl<u8vec, u8_impl<>, replace_val>
+    : std::enable_if<true, u8vec> {};
+
+template <typename u8vec, int first_idx, int... idxs, int replace_val>
+struct u8_replace_impl<u8vec, u8_impl<first_idx, idxs...>, replace_val>
+    : u8_replace_impl<
+          typename u8_replace_single<u8vec, first_idx, replace_val>::type,
+          u8_impl<idxs...>, replace_val> {};
+
+template <typename u8vec, typename u8idx, int replace_val>
+struct u8_replace : u8_replace_impl<u8vec, u8idx, replace_val> {};
+
+template <int... vals, int replace_val>
+struct u8_replace<u8_impl<vals...>, u8_impl<0>, replace_val>
+    : pure_u8_vec<replace_val, sizeof...(vals)> {};
+
 template <int... idxs, int... vals>
 struct u8_indexer<u8_impl<idxs...>, u8_impl<vals...>>
     : indexer_to_u8<u8_impl<idxs...>, u8_impl<vals...>>::type {
   friend struct u8_impl<vals...>;
+
+  template <int replace_val>
+  HELANG_META_CONSTEVAL auto replace() const noexcept {
+    return
+        typename to_u8<typename u8_replace<u8_impl<vals...>, u8_impl<idxs...>,
+                                           replace_val>::type>::type{};
+  }
 
  private:
   constexpr u8_indexer() noexcept = default;
