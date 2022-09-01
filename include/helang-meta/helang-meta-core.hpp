@@ -205,6 +205,17 @@ template <int first_val, int... vals>
 struct u8_at_idx<u8_impl<first_val, vals...>, 1>
     : std::integral_constant<int, first_val> {};
 
+template <typename u8idxs, typename u8vals>
+struct indexer_to_u8;
+
+template <int... idxs, int... vals>
+struct indexer_to_u8<u8_impl<idxs...>, u8_impl<vals...>>
+    : std::enable_if<true, u8<u8_at_idx<u8_impl<vals...>, idxs>::value...>> {};
+
+template <int... vals>
+struct indexer_to_u8<u8_impl<0>, u8_impl<vals...>>
+    : std::enable_if<true, u8<vals...>> {};
+
 template <int... idxs, int... vals>
 struct u8_indexer<u8_impl<idxs...>, u8_impl<vals...>> {
   friend struct u8_impl<vals...>;
@@ -213,7 +224,7 @@ struct u8_indexer<u8_impl<idxs...>, u8_impl<vals...>> {
     return to_u8();
   }
   HELANG_META_CONSTEVAL auto to_u8() const noexcept {
-    return u8<u8_at_idx<u8_impl<vals...>, idxs>::value...>{};
+    return typename indexer_to_u8<u8_impl<idxs...>, u8_impl<vals...>>::type{};
   }
 
   std::string to_string() const { return to_u8().to_string(); }
