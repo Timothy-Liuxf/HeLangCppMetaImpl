@@ -4,9 +4,9 @@
 //
 // MIT License
 
-#ifndef HELANG_META_HPP_
+#ifndef HELANG_META_CORE_HPP_
 #error The header <helang-meta-utils.ipp> cannot be included directly. Please include <helang-meta.hpp> instead.
-#endif  // !HELANG_META_HPP_
+#endif  // !HELANG_META_CORE_HPP_
 
 #ifndef HELANG_META_UTILS_IPP_
 #define HELANG_META_UTILS_IPP_

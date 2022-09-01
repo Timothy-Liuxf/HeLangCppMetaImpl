@@ -4,8 +4,8 @@
 //
 // MIT License
 
-#ifndef HELANG_META_HPP_
-#define HELANG_META_HPP_
+#ifndef HELANG_META_CORE_HPP_
+#define HELANG_META_CORE_HPP_
 
 #include <cstddef>
 #include <string>
@@ -245,4 +245,4 @@ inline Ostream& operator<<(Ostream& out, const u8<vals...>& u8vec) {
 
 HELANG_META_NAMESPACE_END
 
-#endif  // !HELANG_META_HPP_
+#endif  // !HELANG_META_CORE_HPP_

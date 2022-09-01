@@ -4,6 +4,7 @@
 //
 // MIT License
 
+#include <helang-meta/helang-meta-core.hpp>
 #include <helang-meta/helang-meta.hpp>
 
 using namespace helang::meta;
@@ -18,10 +19,8 @@ int main() {
     std::cout << b << std::endl;
   }
   {
-    std::cout << (72_ | 101_ | 108_ | 108_ | 111_ | 44_ | 32_ | 76_ | 105_ |
-                  116_ | 97_ | 110_ | 103_ | 46_)
-                     .to_str_string()
-              << std::endl;
+    sprintln(72_ | 101_ | 108_ | 108_ | 111_ | 44_ | 32_ | 76_ | 105_ | 116_ |
+             97_ | 110_ | 103_ | 46_);
   }
   return 0;
 }
