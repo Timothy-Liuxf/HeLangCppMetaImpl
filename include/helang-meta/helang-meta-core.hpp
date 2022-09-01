@@ -279,7 +279,7 @@ struct u8_indexer<u8_impl<idxs...>, u8_impl<vals...>>
   friend struct u8_impl<vals...>;
 
   template <int replace_val>
-  HELANG_META_CONSTEVAL auto replace() const noexcept {
+  [[nodiscard]] HELANG_META_CONSTEVAL auto replace() const noexcept {
     return
         typename to_u8<typename u8_replace<u8_impl<vals...>, u8_impl<idxs...>,
                                            replace_val>::type>::type{};
