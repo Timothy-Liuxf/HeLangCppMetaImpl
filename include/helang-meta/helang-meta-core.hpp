@@ -217,21 +217,9 @@ struct indexer_to_u8<u8_impl<0>, u8_impl<vals...>>
     : std::enable_if<true, u8<vals...>> {};
 
 template <int... idxs, int... vals>
-struct u8_indexer<u8_impl<idxs...>, u8_impl<vals...>> {
+struct u8_indexer<u8_impl<idxs...>, u8_impl<vals...>>
+    : indexer_to_u8<u8_impl<idxs...>, u8_impl<vals...>>::type {
   friend struct u8_impl<vals...>;
-
-  HELANG_META_CONSTEVAL explicit operator auto() const noexcept {
-    return to_u8();
-  }
-  HELANG_META_CONSTEVAL auto to_u8() const noexcept {
-    return typename indexer_to_u8<u8_impl<idxs...>, u8_impl<vals...>>::type{};
-  }
-
-  std::string to_string() const { return to_u8().to_string(); }
-  std::string to_wstring() const { return to_u8().to_wstring(); }
-
-  std::string to_str_string() const { return to_u8().to_str_string(); }
-  std::wstring to_str_wstring() const { return to_u8().to_str_wstring(); }
 
  private:
   constexpr u8_indexer() noexcept = default;
