@@ -50,5 +50,15 @@ int main() {
       std::printf("%d\n", num);
     }
   }
+  {
+    u8 a = 1_;
+    u8 b = 1_ | 2_ | 3_;
+    u8 c = 2_ | 4_ | 6_;
+    [[maybe_unused]] u8 d = 5_ | 9_;
+    println(a + b);  // 2_ | 3_ | 4_
+    println(b + c);  // 3_ | 6_ | 9_
+    println(b + a);  // 2_ | 3_ | 4_
+    // println(b + d);  // 2_ | 3_ | 4_
+  }
   return 0;
 }
