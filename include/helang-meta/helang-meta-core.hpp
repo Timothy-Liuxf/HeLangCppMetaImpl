@@ -130,34 +130,6 @@ struct u8 : detail::u8_impl<vals...> {
 template <int... vals>
 u8(const u8<vals...>&) -> u8<vals...>;
 
-namespace literals {
-
-namespace detail {
-
-template <int, char...>
-struct charseq_to_int_impl;
-
-template <int val>
-struct charseq_to_int_impl<val> : std::integral_constant<int, val> {};
-
-template <int val, char ch, char... chs>
-struct charseq_to_int_impl<val, ch, chs...>
-    : charseq_to_int_impl<val * 10 + (ch - '0'), chs...> {
-  static_assert(ch >= '0' && ch <= '9',
-                "The characters in a u8 literal must be digits!");
-};
-
-template <char... chs>
-struct charseq_to_int : charseq_to_int_impl<0, chs...> {};
-}  // namespace detail
-
-template <char... chs>
-HELANG_META_CONSTEVAL u8<detail::charseq_to_int<chs...>::value>
-operator""_() noexcept {
-  return {};
-}
-}  // namespace literals
-
 namespace detail {
 
 // Join two u8s
@@ -415,6 +387,42 @@ inline Ostream& operator<<(Ostream& out, const u8<vals...>& u8vec) {
   out << u8vec.to_string();
   return out;
 }
+
+namespace literals {
+
+namespace detail {
+
+template <int, char...>
+struct charseq_to_int_impl;
+
+template <int val>
+struct charseq_to_int_impl<val> : std::integral_constant<int, val> {};
+
+template <int val, char ch, char... chs>
+struct charseq_to_int_impl<val, ch, chs...>
+    : charseq_to_int_impl<val * 10 + (ch - '0'), chs...> {
+  static_assert(ch >= '0' && ch <= '9',
+                "The characters in a u8 literal must be digits!");
+};
+
+template <char... chs>
+struct charseq_to_int : charseq_to_int_impl<0, chs...> {};
+}  // namespace detail
+
+template <char... chs>
+HELANG_META_CONSTEVAL u8<detail::charseq_to_int<chs...>::value>
+operator""_() noexcept {
+  return {};
+}
+
+template <char... chs>
+HELANG_META_CONSTEVAL typename HELANG_META_NAMESPACE::detail::to_u8<
+    typename HELANG_META_NAMESPACE::detail::pure_u8_vec<
+        0, detail::charseq_to_int<chs...>::value>::type>::type
+operator""_dian() noexcept {
+  return {};
+}
+}  // namespace literals
 
 HELANG_META_NAMESPACE_END
 
