@@ -65,6 +65,6 @@
   }                               \
   }
 
-#define HELANG_META_NAMESPACE ::helang::meta::
+#define HELANG_META_NAMESPACE helang::meta
 
 #endif  // !HELANG_META_UTILS_IPP_
