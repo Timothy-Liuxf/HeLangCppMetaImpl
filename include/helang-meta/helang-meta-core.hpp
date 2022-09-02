@@ -66,8 +66,10 @@ struct u8 : detail::u8_impl<vals...> {
   static_assert(std::is_trivial_v<detail::u8_impl<vals...>>,
                 "As a meta-universe language, u8 in helang must be trivial.");
 
+ private:
   using base_t = detail::u8_impl<vals...>;
 
+ public:
   using base_t::u8_impl;
   template <int... idxs, int... origin_vals>
   constexpr u8(
