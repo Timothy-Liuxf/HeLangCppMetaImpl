@@ -48,15 +48,19 @@ struct u8_impl {
 
   [[nodiscard]] HELANG_META_CONSTEVAL auto operator-() const noexcept;
 
-  template <int... right_vals>
+  template <int... rvals>
   [[nodiscard]] HELANG_META_CONSTEVAL auto operator+(
-      u8_impl<right_vals...>) const noexcept;
-  template <int... right_vals>
+      u8_impl<rvals...>) const noexcept;
 
+  template <int... rvals>
   [[nodiscard]] HELANG_META_CONSTEVAL auto operator-(
-      u8_impl<right_vals...> u8vec) const noexcept {
+      u8_impl<rvals...> u8vec) const noexcept {
     return operator+(-u8vec);
   }
+
+  template <int... rvals>
+  [[nodiscard]] HELANG_META_CONSTEVAL auto operator*(
+      u8_impl<rvals...>) const noexcept;
 };
 
 }  // namespace detail
@@ -161,9 +165,9 @@ namespace detail {
 template <typename, typename>
 struct join_u8;
 
-template <int... left_vals, int... right_vals>
-struct join_u8<u8_impl<left_vals...>, u8_impl<right_vals...>>
-    : std::enable_if<true, u8_impl<left_vals..., right_vals...>> {};
+template <int... lvals, int... rvals>
+struct join_u8<u8_impl<lvals...>, u8_impl<rvals...>>
+    : std::enable_if<true, u8_impl<lvals..., rvals...>> {};
 
 // Append a number to a u8
 
@@ -209,12 +213,10 @@ struct addnum_u8<u8_impl<vals...>, val>
 template <typename, typename>
 struct add_u8;
 
-template <int left_val, int... left_vals, int right_val, int... right_vals>
-struct add_u8<u8_impl<left_val, left_vals...>,
-              u8_impl<right_val, right_vals...>>
-    : join_u8<u8_impl<left_val + right_val>,
-              typename add_u8<u8_impl<left_vals...>,
-                              u8_impl<right_vals...>>::type> {};
+template <int lval, int... lvals, int rval, int... rvals>
+struct add_u8<u8_impl<lval, lvals...>, u8_impl<rval, rvals...>>
+    : join_u8<u8_impl<lval + rval>,
+              typename add_u8<u8_impl<lvals...>, u8_impl<rvals...>>::type> {};
 
 template <>
 struct add_u8<u8_impl<>, u8_impl<>> : std::enable_if<true, u8_impl<>> {};
@@ -227,10 +229,10 @@ struct to_u8<u8_impl<vals...>> : std::enable_if<true, u8<vals...>> {};
 
 // Core operation: operator|
 
-template <int... left_vals>
-template <int... right_vals>
-HELANG_META_CONSTEVAL auto u8_impl<left_vals...>::operator|(
-    u8_impl<right_vals...> right) const noexcept {
+template <int... lvals>
+template <int... rvals>
+HELANG_META_CONSTEVAL auto u8_impl<lvals...>::operator|(
+    u8_impl<rvals...> right) const noexcept {
   return
       typename to_u8<typename join_u8<u8_impl, decltype(right)>::type>::type{};
 }
@@ -324,23 +326,21 @@ HELANG_META_CONSTEVAL auto u8_impl<vals...>::operator[](
 
 // Add: operator+
 
-template <int... left_vals>
-template <int... right_vals>
-[[nodiscard]] HELANG_META_CONSTEVAL auto u8_impl<left_vals...>::operator+(
-    u8_impl<right_vals...>) const noexcept {
-  if constexpr (sizeof...(right_vals) == 1) {
+template <int... lvals>
+template <int... rvals>
+[[nodiscard]] HELANG_META_CONSTEVAL auto u8_impl<lvals...>::operator+(
+    u8_impl<rvals...>) const noexcept {
+  if constexpr (sizeof...(rvals) == 1) {
+    return typename to_u8<typename addnum_u8<u8_impl, rvals...>::type>::type{};
+  } else if constexpr (sizeof...(lvals) == 1) {
     return typename to_u8<
-        typename addnum_u8<u8_impl, right_vals...>::type>::type{};
-  } else if constexpr (sizeof...(left_vals) == 1) {
+        typename addnum_u8<u8_impl<rvals...>, lvals...>::type>::type{};
+  } else if constexpr (sizeof...(lvals) == sizeof...(rvals)) {
     return typename to_u8<
-        typename addnum_u8<u8_impl<right_vals...>, left_vals...>::type>::type{};
-  } else if constexpr (sizeof...(left_vals) == sizeof...(right_vals)) {
-    return
-        typename to_u8<typename add_u8<u8_impl<left_vals...>,
-                                       u8_impl<right_vals...>>::type>::type{};
+        typename add_u8<u8_impl<lvals...>, u8_impl<rvals...>>::type>::type{};
   } else {
-    static_assert(sizeof...(right_vals) == 1 || sizeof...(left_vals) == 1 ||
-                      sizeof...(left_vals) == sizeof...(right_vals),
+    static_assert(sizeof...(rvals) == 1 || sizeof...(lvals) == 1 ||
+                      sizeof...(lvals) == sizeof...(rvals),
                   "Invalid operator+!");
   }
 }
@@ -362,6 +362,39 @@ template <int... vals>
 [[nodiscard]] HELANG_META_CONSTEVAL auto u8_impl<vals...>::operator-()
     const noexcept {
   return typename to_u8<typename negative_u8<u8_impl>::type>::type{};
+}
+
+// Inner product: operator*
+
+template <typename, typename>
+struct u8_inner_product;
+
+template <int sum, typename, typename>
+struct u8_inner_product_impl;
+
+template <int sum, int first_lval, int... lvals, int first_rval, int... rvals>
+struct u8_inner_product_impl<sum, u8_impl<first_lval, lvals...>,
+                             u8_impl<first_rval, rvals...>>
+    : u8_inner_product_impl<sum + first_lval * first_rval, u8_impl<lvals...>,
+                            u8_impl<rvals...>> {};
+
+template <int sum, int first_rval, int... rvals>
+struct u8_inner_product_impl<sum, u8_impl<>, u8_impl<first_rval, rvals...>>
+    : std::integral_constant<int, sum> {};
+
+template <int sum, int... lvals>
+struct u8_inner_product_impl<sum, u8_impl<lvals...>, u8_impl<>>
+    : std::integral_constant<int, sum> {};
+
+template <int... lvals, int... rvals>
+struct u8_inner_product<u8_impl<lvals...>, u8_impl<rvals...>>
+    : u8_inner_product_impl<0, u8_impl<lvals...>, u8_impl<rvals...>> {};
+
+template <int... lvals>
+template <int... rvals>
+[[nodiscard]] HELANG_META_CONSTEVAL auto u8_impl<lvals...>::operator*(
+    u8_impl<rvals...>) const noexcept {
+  return u8<u8_inner_product<u8_impl<lvals...>, u8_impl<rvals...>>::value>{};
 }
 
 }  // namespace detail
