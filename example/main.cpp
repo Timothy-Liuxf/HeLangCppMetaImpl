@@ -58,7 +58,9 @@ int main() {
     println(a + b);  // 2_ | 3_ | 4_
     println(b + c);  // 3_ | 6_ | 9_
     println(b + a);  // 2_ | 3_ | 4_
-    // println(b + d);  // 2_ | 3_ | 4_
+    println(b - c);  // -1_ | -2_ | -3_
+    println(a - b);  // 0_ | -1_ | -2_
+    // println(b + d);  // ERROR
   }
   return 0;
 }

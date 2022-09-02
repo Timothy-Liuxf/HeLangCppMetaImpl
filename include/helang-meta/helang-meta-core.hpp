@@ -45,12 +45,14 @@ struct u8_impl {
   [[nodiscard]] HELANG_META_CONSTEVAL auto operator+() const noexcept {
     return *this;
   }
+
   [[nodiscard]] HELANG_META_CONSTEVAL auto operator-() const noexcept;
 
   template <int... right_vals>
   [[nodiscard]] HELANG_META_CONSTEVAL auto operator+(
       u8_impl<right_vals...>) const noexcept;
   template <int... right_vals>
+
   [[nodiscard]] HELANG_META_CONSTEVAL auto operator-(
       u8_impl<right_vals...> u8vec) const noexcept {
     return operator+(-u8vec);
@@ -341,6 +343,25 @@ template <int... right_vals>
                       sizeof...(left_vals) == sizeof...(right_vals),
                   "Invalid operator+!");
   }
+}
+
+// Negative: operator-
+
+template <typename>
+struct negative_u8;
+
+template <int first_val, int... vals>
+struct negative_u8<u8_impl<first_val, vals...>>
+    : join_u8<u8_impl<-first_val>,
+              typename negative_u8<u8_impl<vals...>>::type> {};
+
+template <>
+struct negative_u8<u8_impl<>> : std::enable_if<true, u8_impl<>> {};
+
+template <int... vals>
+[[nodiscard]] HELANG_META_CONSTEVAL auto u8_impl<vals...>::operator-()
+    const noexcept {
+  return typename to_u8<typename negative_u8<u8_impl>::type>::type{};
 }
 
 }  // namespace detail
