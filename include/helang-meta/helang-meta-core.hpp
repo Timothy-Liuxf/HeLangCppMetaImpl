@@ -34,7 +34,7 @@ struct u8_impl {
   [[nodiscard]] HELANG_META_CONSTEVAL auto operator[](
       u8_impl<val...>) const noexcept;
 
-  HELANG_META_CONSTEVAL auto to_array() const noexcept {
+  [[nodiscard]] HELANG_META_CONSTEVAL auto to_array() const noexcept {
     return std::array<int, sizeof...(vals)>{vals...};
   }
 
@@ -288,7 +288,7 @@ struct u8_indexer<u8_impl<idxs...>, u8_impl<vals...>>
 
 template <int... vals>
 template <int... idxs>
-HELANG_META_CONSTEVAL auto u8_impl<vals...>::operator[](
+[[nodiscard]] HELANG_META_CONSTEVAL auto u8_impl<vals...>::operator[](
     u8_impl<idxs...> idx) const noexcept {
   return u8_indexer<decltype(idx), u8_impl>{};
 }
@@ -407,16 +407,17 @@ struct charseq_to_int : charseq_to_int_impl<0, chs...> {};
 }  // namespace detail
 
 template <char... chs>
-HELANG_META_CONSTEVAL u8<detail::charseq_to_int<chs...>::value>
+[[nodiscard]] HELANG_META_CONSTEVAL u8<detail::charseq_to_int<chs...>::value>
 operator""_() noexcept {
   return {};
 }
 
 template <char... chs>
-HELANG_META_CONSTEVAL typename HELANG_META_NAMESPACE::detail::to_u8<
-    typename HELANG_META_NAMESPACE::detail::pure_u8_vec<
-        0, detail::charseq_to_int<chs...>::value>::type>::type
-operator""_dian() noexcept {
+[[nodiscard]] HELANG_META_CONSTEVAL
+    typename HELANG_META_NAMESPACE::detail::to_u8<
+        typename HELANG_META_NAMESPACE::detail::pure_u8_vec<
+            0, detail::charseq_to_int<chs...>::value>::type>::type
+    operator""_dian() noexcept {
   return {};
 }
 }  // namespace literals

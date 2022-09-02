@@ -2,7 +2,7 @@
 # Copyright (C) 2022 Timothy Liu
 # MIT License
 
-export CXXFLAGS ?= -O3 -Wall -Wpedantic -Wextra -std=c++17
+export CXXFLAGS ?= -O3 -Wall -Wpedantic -Wextra -std=c++20
 export INCLUDE_DIR = -I"$(realpath .)/include"
 export CXX += $(CXXFLAGS) $(INCLUDE_DIR)
 export MKDIR ?= mkdir -p
