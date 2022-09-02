@@ -7,6 +7,7 @@
 #ifndef HELANG_META_CORE_HPP_
 #define HELANG_META_CORE_HPP_
 
+#include <array>
 #include <cstddef>
 #include <string>
 #include <type_traits>
@@ -21,11 +22,6 @@ namespace detail {
 template <typename indexer, typename u8vec>
 struct u8_indexer;
 
-template <int size>
-struct array_wrapper {
-  int array[size];
-};
-
 template <int... vals>
 struct u8_impl {
   constexpr u8_impl() noexcept = default;
@@ -39,7 +35,7 @@ struct u8_impl {
       u8_impl<val...>) const noexcept;
 
   HELANG_META_CONSTEVAL auto to_array() const noexcept {
-    return array_wrapper<sizeof...(vals)>{{vals...}};
+    return std::array<int, sizeof...(vals)>{vals...};
   }
 
   [[nodiscard]] HELANG_META_CONSTEVAL auto operator+() const noexcept {

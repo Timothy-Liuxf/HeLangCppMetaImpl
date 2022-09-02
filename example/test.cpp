@@ -55,7 +55,7 @@ static void test5() {
 static void test6() {
   u8 a = 1_ | 2_ | 3_;
   auto cyber = a.to_array();
-  for (auto pm : cyber.array) {
+  for (auto pm : cyber) {
     std::cout << pm << ' ';
   }
   endl(std::cout);
