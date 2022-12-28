@@ -400,3 +400,10 @@ FodyWeavers.xsd
 # Output files
 a.out
 main.s
+
+# Jetbrain Idea
+.idea
+
+# Build Dir
+cmake-build-debug
+build
