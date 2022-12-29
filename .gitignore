@@ -402,7 +402,7 @@ a.out
 main.s
 
 # Jetbrain Idea
-.idea
+.idea/
 
 # Build Dir
 cmake-build-debug/
