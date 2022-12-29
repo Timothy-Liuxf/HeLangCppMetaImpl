@@ -33,6 +33,8 @@ Meta-Helang：何语言（元宇宙版）——何而上语言，次世代赛博
 
 ### 运行样例
 
+#### 方法一 使用 GNU Make
+
 高维度的生命体提供的样例需要类 UNIX 环境才能完美窥探其奥妙。在类 UNIX 元宇宙实验空间中安装 GNU Make 和支持 C++17 的 `g++` 并运行：  
 
 ```shell
@@ -48,6 +50,22 @@ $ CXX=clang++ make run
 ```
 
 你也可以修改**伟大的实验勘探清单** `Makefile` 更改仪器版本，例如将 `-std=c++17` 改为 `-std=c++20`。  
+
+#### 方法二 使用 CMake
+
+在赛博时间 2022 年 12 月 18 \~ 29 日，赛博实验室高级科研人员 [RugerMcCarthy](https://github.com/RugerMcCarthy) 为何而上语言增加了 CMake 支持😘，让何而上语言能够使用赛博工具 CMake 构建😍。请在你的元宇宙实验空间中安装 CMake 和支持 C++17 的 `g++` 并运行：
+
+```shell
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make -j$(nproc)
+$ ./bin/main
+```
+
+即可运行示例程序 `example/test.cpp`。
+
+你也可以修改**英明的新实验勘探清单** `CMakeLists.txt` 和 `example/CMakeLists.txt` 更改仪器版本，例如将 `set(CMAKE_CXX_STANDARD 17)` 改为 `set(CMAKE_CXX_STANDARD 20)`。  
 
 ### 使用何而上语言
 
