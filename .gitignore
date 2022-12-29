@@ -405,5 +405,5 @@ main.s
 .idea
 
 # Build Dir
-cmake-build-debug
+cmake-build-debug/
 build/
