@@ -406,4 +406,4 @@ main.s
 
 # Build Dir
 cmake-build-debug
-build
+build/
