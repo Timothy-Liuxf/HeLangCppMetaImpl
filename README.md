@@ -282,10 +282,10 @@ wprintln(a); // 不会真的有人用宽字符版本吧，不会吧不会吧
 
 ```c++
 u8 a = 97_ | 98_ | 99_;
-sprint();  // 输出 abc
-sprintln();
-swprint();
-swprintln();
+sprint(a);  // 输出 abc
+sprintln(a);
+swprint(a);
+swprintln(a);
 ```
 
 ## 高性能交互方式——数组内建支持
